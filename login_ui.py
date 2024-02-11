@@ -1,0 +1,66 @@
+from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton
+from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtCore import Qt
+from widgets import ClickableLineEdit  # Adjust this import based on your project structure
+#import auth_manager  # Adjust this import based on your project structure
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.windowWidth = 1200
+        self.windowHeight = 1200
+        self.setMinimumSize(800, 600)
+        self.setupUi()
+
+    def setupUi(self):
+        self.setWindowTitle("Resu-Hunter")
+        self.setWindowIcon(QIcon("images/resu_hunter_icon.png"))
+        self.setGeometry(1200, 300, self.windowWidth, self.windowHeight)
+
+        # Title Label
+        self.label_title = QLabel("Welcome to Resu-Hunter!", self)
+        self.label_title.setFont(QFont('Arial', 25))
+        self.label_title.setAlignment(Qt.AlignCenter)
+        self.label_title.adjustSize()
+        self.label_title.move((self.width() - self.label_title.width()) // 2, (self.height() - self.label_title.height()) // 3)
+
+        # Username Input
+        self.input_username = ClickableLineEdit(self)
+        self.input_username.setPlaceholderText("Enter username")
+        self.input_username.setFont(QFont('Arial', 14))
+        self.input_username.setAlignment(Qt.AlignCenter)
+        self.input_username.adjustSize()
+        self.input_username.move((self.width() - self.input_username.width()) // 2, self.label_title.y() + self.label_title.height() + 40)
+
+        # Password Input
+        self.input_password = ClickableLineEdit(self)
+        self.input_password.setPlaceholderText("Enter password")
+        self.input_password.setEchoMode(ClickableLineEdit.Password)  # Hide password text
+        self.input_password.setFont(QFont('Arial', 14))
+        self.input_password.setAlignment(Qt.AlignCenter)
+        self.input_password.adjustSize()
+        self.input_password.move((self.width() - self.input_password.width()) // 2, self.input_username.y() + self.input_username.height() + 40)
+
+        # Login Button
+        self.login_button = QPushButton("Login", self)
+        self.login_button.clicked.connect(self.on_login_clicked)
+        self.login_button.adjustSize()
+        self.login_button.move((self.width() - self.login_button.width()) // 2, self.input_password.y() + self.input_password.height() + 40)
+
+    def resizeEvent(self, event):
+        self.updateUI()
+        super().resizeEvent(event)
+
+    def updateUI(self):
+        self.label_title.adjustSize()
+        self.label_title.move((self.width() - self.label_title.width()) // 2, (self.height() - self.label_title.height()) // 3)
+        self.input_username.move((self.width() - self.input_username.width()) // 2, self.label_title.y() + self.label_title.height() + 40)
+        self.input_password.move((self.width() - self.input_password.width()) // 2, self.input_username.y() + self.input_username.height() + 40)
+        self.login_button.move((self.width() - self.login_button.width()) // 2, self.input_password.y() + self.input_password.height() + 40)
+
+    def on_login_clicked(self):
+        # Extract username and password from input fields
+        username = self.input_username.text()
+        password = self.input_password.text()
+        # Placeholder for authentication logic - replace with your actual login process
+        #auth_manager.login(username, password)  # You'll need to define this function in auth_manager.py
