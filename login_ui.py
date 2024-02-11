@@ -48,6 +48,12 @@ class MainWindow(QMainWindow):
         self.login_button.clicked.connect(self.on_login_clicked)
         self.login_button.adjustSize()
         self.login_button.move((self.width() - self.login_button.width()) // 2, self.input_password.y() + self.input_password.height() + 40)
+        
+        # Register Button
+        self.register_button = QPushButton("Register", self)
+        self.register_button.clicked.connect(self.on_register_clicked)
+        self.register_button.move((self.width() - self.register_button.width()) // 2, self.login_button.y() + self.login_button.height() + 40)
+        self.register_button.adjustSize()
 
     def resizeEvent(self, event):
         self.updateUI()
@@ -73,15 +79,16 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Login Failed", "The account does not exist or the password is incorrect.")
 
     def on_login_clicked(self):
-        email = self.input_username.text()
+        # Extract username and password from input fields
+        username = self.input_username.text()
         password = self.input_password.text()
-        response_data = auth_manager.login(email, password)
+        response_data = auth_manager.login(username, password)
         if response_data:
-            QMessageBox.information(self, "Login Success", "You are logged in.")
-            # Here, transition to the main part of your application
-            # For example, close this window and open the main dashboard
+            self.hide()
+            self.dashboard = DashboardWindow(self.geometry())
+            self.dashboard.show()
         else:
-            QMessageBox.warning(self, "Login Failed", "Incorrect username or password.")
+            QMessageBox.warning(self, "Login Failed", "The account does not exist or the password is incorrect.")
 
     def on_register_clicked(self):
         self.hide()  # Hide the login window

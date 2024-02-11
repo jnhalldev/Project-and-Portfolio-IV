@@ -50,7 +50,11 @@ class RegistrationWindow(QMainWindow):
         email = self.input_email.text()
         password = self.input_password.text()
         company = self.input_company.text()
-        result = auth_manager.register(email, password, name, company)
+        result = auth_manager.register(email, password)
+        
+        if not all([name, email, password, company]):
+            QMessageBox.warning(self, "Registration Failed", "All fields are required.")
+            return
         if result["success"]:
             QMessageBox.information(self, "Registration Successful", "Account created successfully.")
             self.parent().input_username.setText(email)  # Pre-fill the login form with the new email
