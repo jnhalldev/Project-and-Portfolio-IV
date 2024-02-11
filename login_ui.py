@@ -1,8 +1,9 @@
-from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QMessageBox
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
-from widgets import ClickableLineEdit  # Adjust this import based on your project structure
-#import auth_manager  # Adjust this import based on your project structure
+from widgets import ClickableLineEdit 
+import auth_manager  
+from dashboard import DashboardWindow
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -26,7 +27,7 @@ class MainWindow(QMainWindow):
 
         # Username Input
         self.input_username = ClickableLineEdit(self)
-        self.input_username.setPlaceholderText("Enter username")
+        self.input_username.setPlaceholderText("Enter email")
         self.input_username.setFont(QFont('Arial', 14))
         self.input_username.setAlignment(Qt.AlignCenter)
         self.input_username.adjustSize()
@@ -62,5 +63,10 @@ class MainWindow(QMainWindow):
         # Extract username and password from input fields
         username = self.input_username.text()
         password = self.input_password.text()
-        # Placeholder for authentication logic - replace with your actual login process
-        #auth_manager.login(username, password)  # You'll need to define this function in auth_manager.py
+        response_data = auth_manager.login(username, password)
+        if response_data:
+            self.hide()
+            self.dashboard = DashboardWindow()
+            self.dashboard.show()
+        else:
+            QMessageBox.warning(self, "Login Failed", "The account does not exist or the password is incorrect.")
