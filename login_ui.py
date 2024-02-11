@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt
 from widgets import ClickableLineEdit 
 import auth_manager  
 from dashboard import DashboardWindow
+from registration_ui import RegistrationWindow
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -70,3 +71,19 @@ class MainWindow(QMainWindow):
             self.dashboard.show()
         else:
             QMessageBox.warning(self, "Login Failed", "The account does not exist or the password is incorrect.")
+
+    def on_login_clicked(self):
+        email = self.input_username.text()
+        password = self.input_password.text()
+        response_data = auth_manager.login(email, password)
+        if response_data:
+            QMessageBox.information(self, "Login Success", "You are logged in.")
+            # Here, transition to the main part of your application
+            # For example, close this window and open the main dashboard
+        else:
+            QMessageBox.warning(self, "Login Failed", "Incorrect username or password.")
+
+    def on_register_clicked(self):
+        self.hide()  # Hide the login window
+        self.registrationWindow = RegistrationWindow(geometry=self.geometry(), parent=self)
+        self.registrationWindow.show()
