@@ -3,6 +3,7 @@ from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
 import auth_manager
 import login_ui
+import new_project_ui
 
 class DashboardWindow(QMainWindow):
     def __init__(self, geometry=None):
@@ -68,8 +69,9 @@ class DashboardWindow(QMainWindow):
         menu.exec_(self.menuButton.mapToGlobal(self.menuButton.rect().bottomLeft()))
 
     def startNewProject(self):
-        # Logic to start a new project
-        pass
+        self.hide()
+        self.newProjectWindow = new_project_ui.NewProjectWindow(self.geometry(), self)
+        self.newProjectWindow.show()
 
     def loadProjects(self):
         #sample projects
