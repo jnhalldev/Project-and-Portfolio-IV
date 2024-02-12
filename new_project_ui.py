@@ -42,6 +42,21 @@ class NewProjectWindow(QMainWindow):
         self.projectNameInput.setFixedWidth(500)
         layout.addWidget(self.projectNameInput, alignment=Qt.AlignCenter)
 
+        self.projectNameInput = QLineEdit()
+        self.projectNameInput.setPlaceholderText("Category")
+        self.projectNameInput.setFixedWidth(500)
+        layout.addWidget(self.projectNameInput, alignment=Qt.AlignCenter)
+
+        self.projectNameInput = QLineEdit()
+        self.projectNameInput.setPlaceholderText("Job Title")
+        self.projectNameInput.setFixedWidth(500)
+        layout.addWidget(self.projectNameInput, alignment=Qt.AlignCenter)
+
+        self.projectNameInput = QLineEdit()
+        self.projectNameInput.setPlaceholderText("Location")
+        self.projectNameInput.setFixedWidth(500)
+        layout.addWidget(self.projectNameInput, alignment=Qt.AlignCenter)
+
         self.projectDescriptionInput = QTextEdit()
         self.projectDescriptionInput.setPlaceholderText("Project Description")
         self.projectDescriptionInput.setFixedWidth(700)
