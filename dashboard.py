@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton, QScrollArea, QVBoxLayout, QHBoxLayout, QMenu
+from PyQt5.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton, QScrollArea, QHBoxLayout, QFrame, QMenu
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
 
@@ -16,9 +16,9 @@ class DashboardWindow(QMainWindow):
         mainLayout = QVBoxLayout()
         
         # Menu Button
-        self.menuButton = QPushButton('☰')  # Using a simple text-based "hamburger" icon
+        self.menuButton = QPushButton('☰')
         self.menuButton.clicked.connect(self.openMenu)
-        self.menuButton.setMaximumSize(50, 30)  # Small button size
+        self.menuButton.setMaximumSize(50, 30)
         
         # Top layout for menu and other possible top-right controls
         topLayout = QHBoxLayout()
@@ -59,9 +59,9 @@ class DashboardWindow(QMainWindow):
 
     def openMenu(self):
         menu = QMenu(self)
-        action1 = menu.addAction("Option 1")
-        action2 = menu.addAction("Option 2")
-        # ... add more actions as needed
+        account = menu.addAction("Account")
+        settings = menu.addAction("Settings")
+        logout = menu.addAction("Logout")
         menu.exec_(self.menuButton.mapToGlobal(self.menuButton.rect().bottomLeft()))
 
     def startNewProject(self):
@@ -69,12 +69,58 @@ class DashboardWindow(QMainWindow):
         pass
 
     def loadProjects(self):
-        # This method should populate the scroll area with projects
-        # For demonstration, let's create dummy buttons for projects
-        for i in range(10):  # Assume there are 10 projects
-            projectButton = QPushButton(f"Project {i+1}")
-            projectButton.clicked.connect(lambda checked, i=i: self.openProject(i))
-            self.projectsLayout.addWidget(projectButton, alignment=Qt.AlignCenter)
+        #sample projects
+        projects = [
+            {"title": "Project 1", "description": "Description of Project 1"},
+            {"title": "Project 2", "description": "Description of Project 2"},
+            {"title": "Project 3", "description": "Description of Project 3"},
+            {"title": "Project 4", "description": "Description of Project 4"},
+            {"title": "Project 5", "description": "Description of Project 5"},
+            {"title": "Project 6", "description": "Description of Project 6"},
+            {"title": "Project 7", "description": "Description of Project 7"},
+            {"title": "Project 8", "description": "Description of Project 8"},
+            {"title": "Project 9", "description": "Description of Project 9"},
+            {"title": "Project 10", "description": "Description of Project 10"},
+            {"title": "Project 11", "description": "Description of Project 11"},
+            {"title": "Project 12", "description": "Description of Project 12"},
+            {"title": "Project 13", "description": "Description of Project 13"},
+            {"title": "Project 14", "description": "Description of Project 14"},
+            {"title": "Project 15", "description": "Description of Project 15"},
+            {"title": "Project 16", "description": "Description of Project 16"},
+            {"title": "Project 17", "description": "Description of Project 17"},
+        ]
+
+        for project in projects:
+            # Container for each project
+            projectContainer = QFrame()
+            projectContainer.setFrameShape(QFrame.StyledPanel)
+            projectContainer.setFrameShadow(QFrame.Raised)
+            
+            # Horizontal layout for the project container
+            projectLayout = QHBoxLayout()
+
+            # Project title and description
+            projectText = QLabel(f"<b>{project['title']}</b><br>{project['description']}")
+            projectText.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            projectText.setWordWrap(True)
+
+            # Button to navigate to the project
+            projectButton = QPushButton("Open")
+            projectButton.clicked.connect(lambda checked, title=project['title']: self.openProject(title))
+
+            # Add the label and button to the project layout
+            projectLayout.addWidget(projectText, 1)  # Add stretch factor to text for it to take up available space
+            projectLayout.addWidget(projectButton)
+
+            # Set the project layout to the project container
+            projectContainer.setLayout(projectLayout)
+
+            # Add the project container to the projects layout
+            self.projectsLayout.addWidget(projectContainer)
+
+    def openProject(self, title):
+        # Logic to open the selected project
+        print(f"{title} opened")
 
     def openProject(self, projectIndex):
         # Logic to navigate to the selected project
