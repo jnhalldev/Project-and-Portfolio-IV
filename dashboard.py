@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton, QScrollArea, QHBoxLayout, QFrame, QMenu
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
+import auth_manager
+import login_ui
 
 class DashboardWindow(QMainWindow):
     def __init__(self, geometry=None):
@@ -62,6 +64,7 @@ class DashboardWindow(QMainWindow):
         account = menu.addAction("Account")
         settings = menu.addAction("Settings")
         logout = menu.addAction("Logout")
+        logout.triggered.connect(self.logout)
         menu.exec_(self.menuButton.mapToGlobal(self.menuButton.rect().bottomLeft()))
 
     def startNewProject(self):
@@ -125,3 +128,13 @@ class DashboardWindow(QMainWindow):
     def openProject(self, projectIndex):
         # Logic to navigate to the selected project
         print(f"Project {projectIndex+1} opened")
+
+    def logout(self):
+        # Call the logout function in auth_manager
+        auth_manager.logout()
+        # Close the DashboardWindow
+        self.hide()
+        self.dashboard = login_ui.MainWindow()
+        self.dashboard.show()
+        #if hasattr(self, 'loginWindow'):
+        #    self.loginWindow.show()
