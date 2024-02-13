@@ -26,8 +26,8 @@ class MainWindow(QMainWindow):
 
         # Image Label
         self.imageLabel = QLabel(self)
-        pixmap = QPixmap("images/Resu-Hunter_Logo.jpg")  # Replace 'your_image.png' with your actual image path
-        self.imageLabel.setPixmap(pixmap.scaled(600, 600, Qt.KeepAspectRatio))  # Adjust scaling as needed
+        pixmap = QPixmap("images/Resu-Hunter_Logo.jpg") 
+        self.imageLabel.setPixmap(pixmap.scaled(600, 600, Qt.KeepAspectRatio))
         self.imageLabel.setAlignment(Qt.AlignCenter)
         mainLayout.addWidget(self.imageLabel)
 
@@ -109,6 +109,6 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Login Failed", "The account does not exist or the password is incorrect.")
 
     def on_register_clicked(self):
-        self.hide()  # Hide the login window
+        self.hide()
         self.registrationWindow = RegistrationWindow(self.geometry(), parent=self)
         self.registrationWindow.show()

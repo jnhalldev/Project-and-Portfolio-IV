@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt
 import auth_manager
 import login_ui
 import new_project_ui
+import project_details
 
 class DashboardWindow(QMainWindow):
     def __init__(self, geometry=None):
@@ -111,10 +112,10 @@ class DashboardWindow(QMainWindow):
 
             # Button to navigate to the project
             projectButton = QPushButton("Open")
-            projectButton.clicked.connect(lambda checked, title=project['title']: self.openProject(title))
+            projectButton.clicked.connect(lambda checked, p=project: self.openProjectDetails(p))
 
             # Add the label and button to the project layout
-            projectLayout.addWidget(projectText, 1)  # Add stretch factor to text for it to take up available space
+            projectLayout.addWidget(projectText, 1)
             projectLayout.addWidget(projectButton)
 
             # Set the project layout to the project container
@@ -123,9 +124,10 @@ class DashboardWindow(QMainWindow):
             # Add the project container to the projects layout
             self.projectsLayout.addWidget(projectContainer)
 
-    def openProject(self, title):
-        # Logic to open the selected project
-        print(f"{title} opened")
+    def openProjectDetails(self, title):
+        self.projectDetailsWindow = project_details.ProjectDetailsWindow(project=title, parent=self)
+        self.projectDetailsWindow.show()
+        self.hide()
 
     def openProject(self, projectIndex):
         # Logic to navigate to the selected project
@@ -138,5 +140,3 @@ class DashboardWindow(QMainWindow):
         self.hide()
         self.dashboard = login_ui.MainWindow()
         self.dashboard.show()
-        #if hasattr(self, 'loginWindow'):
-        #    self.loginWindow.show()

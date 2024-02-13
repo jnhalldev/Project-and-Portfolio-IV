@@ -10,5 +10,4 @@ class ClickableLineEdit(QLineEdit):
     def mousePressEvent(self, event):
         # Call the parent class's mousePressEvent
         super().mousePressEvent(event)
-        # Optionally, you can set focus explicitly, but it's not necessary if the focus policy is set correctly
         self.setFocus()

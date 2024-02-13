@@ -96,7 +96,7 @@ class NewProjectWindow(QMainWindow):
             reply = QMessageBox.question(self, "Confirm", "A ZIP file has already been selected. Do you want to change it?",
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.No:
-                return  # Do nothing, keep the existing file
+                return
         
         # Open file dialog to select a new ZIP file
         options = QFileDialog.Options()
@@ -104,12 +104,13 @@ class NewProjectWindow(QMainWindow):
                                                   "ZIP Files (*.zip)", options=options)
         
         if fileName:
-            self.selectedZipFile = fileName  # Update the selected file
-            self.uploadResumesButton.setText("File Selected!")  # Update button text
+            self.selectedZipFile = fileName 
+            self.uploadResumesButton.setText("File Selected!")
 
     def saveProject(self):
         # Placeholder for save project logic
         QMessageBox.information(self, "Project Saved", "Your project has been saved successfully.")
+        self.goBack()
 
     def goBack(self):
         if self.parent():
