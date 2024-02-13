@@ -41,7 +41,9 @@ def register(email, password):
         return {"success": True, "data": response_data}
     else:
         # Registration failed
-        return {"success": False, "error": response_data.get("error", {}).get("message", "Unknown error")}
+        errorMessage = response_data.get("error", {}).get("message", "Unknown error")
+        print("Failed to register:", errorMessage)
+        return {"success": False, "message": errorMessage}
 
 def logout():
     # If you're storing the user's token or any session data, clear it here

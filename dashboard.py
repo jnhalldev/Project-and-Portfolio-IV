@@ -12,7 +12,7 @@ class DashboardWindow(QMainWindow):
         if geometry:
             self.setGeometry(geometry)
         self.setWindowIcon(QIcon("images/resu_hunter_icon.png"))
-        self.setMinimumSize(800, 600)
+        self.setFixedSize(1200,1200)
         self.setupUI()
 
     def setupUI(self):
