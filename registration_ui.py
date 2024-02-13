@@ -25,8 +25,8 @@ class RegistrationWindow(QMainWindow):
 
         # Image Label
         self.imageLabel = QLabel(self)
-        pixmap = QPixmap("images/Resu-Hunter_Logo.jpg")  # Replace 'your_image.png' with your actual image path
-        self.imageLabel.setPixmap(pixmap.scaled(600, 600, Qt.KeepAspectRatio))  # Adjust scaling as needed
+        pixmap = QPixmap("images/Resu-Hunter_Logo.jpg")
+        self.imageLabel.setPixmap(pixmap.scaled(600, 600, Qt.KeepAspectRatio))
         self.imageLabel.setAlignment(Qt.AlignCenter)
         formLayout.addWidget(self.imageLabel)
 
@@ -95,10 +95,10 @@ class RegistrationWindow(QMainWindow):
         if result.get("success"):
             QMessageBox.information(self, "Registration Successful", "Account created successfully.")
             if self.parent() and hasattr(self.parent(), 'input_username'):
-                self.parent().input_username.setText(email)  # Pre-fill the login form with the new email
+                self.parent().input_username.setText(email)
             self.close()
             if self.parent():
-                self.parent().show()  # Show the login window again
+                self.parent().show() 
         else:
             QMessageBox.warning(self, "Registration Failed", result.get("message", "An error occurred during registration."))
 

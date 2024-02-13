@@ -24,7 +24,7 @@ def login(email, password):
 import requests
 
 def register(email, password):
-    api_key = "AIzaSyCQmi-nmvKtIE304cvwdqZEJrWy0LZIF4I"  # Replace with your actual Firebase Web API key
+    api_key = "AIzaSyCQmi-nmvKtIE304cvwdqZEJrWy0LZIF4I" 
     request_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={api_key}"
     
     data = {
@@ -46,6 +46,4 @@ def register(email, password):
         return {"success": False, "message": errorMessage}
 
 def logout():
-    # If you're storing the user's token or any session data, clear it here
-    # For this example, we'll just print a message
     print("User logged out")
