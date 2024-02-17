@@ -5,8 +5,10 @@ import auth_manager
 import login_ui
 import new_project_ui
 import project_details
-from account import ClearUserIDToken
+from account import ClearUserIDToken, GetDatabaseURL, GetUserID, ClearUserID
 import project
+import requests
+import json
 
 class DashboardWindow(QMainWindow):
     def __init__(self, geometry=None):
@@ -76,27 +78,50 @@ class DashboardWindow(QMainWindow):
         self.newProjectWindow = new_project_ui.NewProjectWindow(self.geometry(), self)
         self.newProjectWindow.show()
 
+    def fetchProjectsKeys(self):
+        userID = GetUserID()
+        databaseURL = GetDatabaseURL()
+        projectsURL = f"{databaseURL}/{userID}/projects.json"
+
+        response = requests.get(projectsURL)
+        if response.status_code == 200 and response.json() is not None:
+            # Extract project keys
+            project_keys = list(response.json().keys())
+        else:
+            project_keys = []
+        return project_keys
+
     def loadProjects(self):
-        #sample projects
-        projects = [
-            {"title": "Project 1", "description": "Description of Project 1"},
-            {"title": "Project 2", "description": "Description of Project 2"},
-            {"title": "Project 3", "description": "Description of Project 3"},
-            {"title": "Project 4", "description": "Description of Project 4"},
-            {"title": "Project 5", "description": "Description of Project 5"},
-            {"title": "Project 6", "description": "Description of Project 6"},
-            {"title": "Project 7", "description": "Description of Project 7"},
-            {"title": "Project 8", "description": "Description of Project 8"},
-            {"title": "Project 9", "description": "Description of Project 9"},
-            {"title": "Project 10", "description": "Description of Project 10"},
-            {"title": "Project 11", "description": "Description of Project 11"},
-            {"title": "Project 12", "description": "Description of Project 12"},
-            {"title": "Project 13", "description": "Description of Project 13"},
-            {"title": "Project 14", "description": "Description of Project 14"},
-            {"title": "Project 15", "description": "Description of Project 15"},
-            {"title": "Project 16", "description": "Description of Project 16"},
-            {"title": "Project 17", "description": "Description of Project 17"},
-        ]
+
+        self.clearLayout(self.projectsLayout)
+        
+        projects = []
+        userID = GetUserID()
+        databaseURL = GetDatabaseURL()
+        project_keys = self.fetchProjectsKeys()
+
+        for project_key in project_keys:
+            projectDetailURL = f"{databaseURL}/{userID}/projects/{project_key}.json"
+
+            # Fetch the project details
+            response = requests.get(projectDetailURL)
+            if response.status_code == 200:
+                try:
+                    # Attempt to parse the JSON string to a dictionary
+                    print(type(response.text))
+                    print(response.text)
+
+                    project_data = json.loads(response.text)
+
+                    # Now access project_data as a dictionary
+                    title = project_data.get("name", project_key)
+                    description = project_data.get("description", "No description available")
+                    projects.append({"title": title, "description": description})
+                except json.JSONDecodeError as e:
+                    print(f"Failed to parse project data for {project_key}: {e}")
+                    continue  # Skip this project on parsing error
+            else:
+                print(f"Failed to fetch details for project {project_key}")
 
         for project in projects:
             # Container for each project
@@ -106,6 +131,9 @@ class DashboardWindow(QMainWindow):
             
             # Horizontal layout for the project container
             projectLayout = QHBoxLayout()
+            self.projectsLayout.setAlignment(Qt.AlignTop)
+
+
 
             # Project title and description
             projectText = QLabel(f"<b>{project['title']}</b><br>{project['description']}")
@@ -137,8 +165,16 @@ class DashboardWindow(QMainWindow):
 
     def logout(self):
         ClearUserIDToken()
+        ClearUserID()
         auth_manager.logout()
         # Close the DashboardWindow
         self.hide()
         self.dashboard = login_ui.MainWindow()
         self.dashboard.show()
+
+    def clearLayout(self, layout):
+        # Safely remove all widgets from a layout
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()

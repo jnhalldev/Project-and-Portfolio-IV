@@ -128,17 +128,11 @@ class NewProjectWindow(QMainWindow):
         )
         
         project_dict = createdProject.to_dict()
-        project_json = json.dumps(project_dict)
-        
 
         database_url = account.GetDatabaseURL()
         user_id_token = account.GetUserIDToken()
-        database_manager.write_data_to_firebase(database_url, project_url_path, user_id_token, project_json)
-        
-        # Optionally, if write_data_to_firebase returns the actual URL where the project was saved,
-        # you could then set that URL to your project object here
-        # createdProject.projectURL = returned_url_from_firebase
-        
+        database_manager.write_data_to_firebase(database_url, project_url_path, user_id_token, project_dict)
+
         QMessageBox.information(self, "Project Saved", "Your project has been saved successfully.")
         self.goBack()
 
@@ -146,6 +140,7 @@ class NewProjectWindow(QMainWindow):
     def goBack(self):
         if self.parent():
             self.parent().setGeometry(self.geometry()) 
+            self.parent().loadProjects()
             self.parent().show()
         self.close()
 
