@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QMessageBox, QComboBox, QFrame
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt
+import project
 
 class ProjectDetailsWindow(QMainWindow):
     def __init__(self, project, parent=None):

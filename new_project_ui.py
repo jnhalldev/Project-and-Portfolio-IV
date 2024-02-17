@@ -1,6 +1,10 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QLineEdit, QTextEdit, QMessageBox, QHBoxLayout, QFileDialog
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
+import project
+import database_manager
+import account
+import json
 
 class NewProjectWindow(QMainWindow):
     def __init__(self, geometry=None, parent=None):
@@ -42,20 +46,20 @@ class NewProjectWindow(QMainWindow):
         self.projectNameInput.setFixedWidth(500)
         layout.addWidget(self.projectNameInput, alignment=Qt.AlignCenter)
 
-        self.projectNameInput = QLineEdit()
-        self.projectNameInput.setPlaceholderText("Category")
-        self.projectNameInput.setFixedWidth(500)
-        layout.addWidget(self.projectNameInput, alignment=Qt.AlignCenter)
+        self.projectCategoryInput = QLineEdit()
+        self.projectCategoryInput.setPlaceholderText("Category")
+        self.projectCategoryInput.setFixedWidth(500)
+        layout.addWidget(self.projectCategoryInput, alignment=Qt.AlignCenter)
 
-        self.projectNameInput = QLineEdit()
-        self.projectNameInput.setPlaceholderText("Job Title")
-        self.projectNameInput.setFixedWidth(500)
-        layout.addWidget(self.projectNameInput, alignment=Qt.AlignCenter)
+        self.projectJobTitleInput = QLineEdit()
+        self.projectJobTitleInput.setPlaceholderText("Job Title")
+        self.projectJobTitleInput.setFixedWidth(500)
+        layout.addWidget(self.projectJobTitleInput, alignment=Qt.AlignCenter)
 
-        self.projectNameInput = QLineEdit()
-        self.projectNameInput.setPlaceholderText("Location")
-        self.projectNameInput.setFixedWidth(500)
-        layout.addWidget(self.projectNameInput, alignment=Qt.AlignCenter)
+        self.projectLocationInput = QLineEdit()
+        self.projectLocationInput.setPlaceholderText("Location")
+        self.projectLocationInput.setFixedWidth(500)
+        layout.addWidget(self.projectLocationInput, alignment=Qt.AlignCenter)
 
         self.projectDescriptionInput = QTextEdit()
         self.projectDescriptionInput.setPlaceholderText("Project Description")
@@ -108,9 +112,36 @@ class NewProjectWindow(QMainWindow):
             self.uploadResumesButton.setText("File Selected!")
 
     def saveProject(self):
-        # Placeholder for save project logic
+        # Instantiate the Project class with input from the UI
+        
+        project_url_path = f"{account.GetUserID()}/projects/{self.projectNameInput.text()}/"
+        createdProject = project.Project(
+            self.projectNameInput.text(),
+            self.projectCategoryInput.text(),
+            self.projectJobTitleInput.text(),
+            self.projectLocationInput.text(), 
+            self.projectDescriptionInput.toPlainText(),
+            self.jobSkillsInput.toPlainText(),
+            self.educationInput.toPlainText(),
+            self.experienceInput.toPlainText(),
+            project_url_path
+        )
+        
+        project_dict = createdProject.to_dict()
+        project_json = json.dumps(project_dict)
+        
+
+        database_url = account.GetDatabaseURL()
+        user_id_token = account.GetUserIDToken()
+        database_manager.write_data_to_firebase(database_url, project_url_path, user_id_token, project_json)
+        
+        # Optionally, if write_data_to_firebase returns the actual URL where the project was saved,
+        # you could then set that URL to your project object here
+        # createdProject.projectURL = returned_url_from_firebase
+        
         QMessageBox.information(self, "Project Saved", "Your project has been saved successfully.")
         self.goBack()
+
 
     def goBack(self):
         if self.parent():

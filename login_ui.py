@@ -2,7 +2,8 @@ from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QMessageBox, QWidg
 from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtCore import Qt
 from widgets import ClickableLineEdit 
-import auth_manager  
+from auth_manager import login
+from account import SaveUserIDToken,SaveUserID
 from dashboard import DashboardWindow
 from registration_ui import RegistrationWindow
 
@@ -100,8 +101,11 @@ class MainWindow(QMainWindow):
         # Extract username and password from input fields
         username = self.input_username.text()
         password = self.input_password.text()
-        response_data = auth_manager.login(username, password)
-        if response_data:
+        response_data = login(username, password)
+        if response_data['success']:
+            SaveUserIDToken(response_data['idToken'])
+            testing = response_data['localId']
+            SaveUserID(testing)
             self.hide()
             self.dashboard = DashboardWindow(self.geometry())
             self.dashboard.show()

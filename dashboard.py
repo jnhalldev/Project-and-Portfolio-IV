@@ -5,6 +5,8 @@ import auth_manager
 import login_ui
 import new_project_ui
 import project_details
+from account import ClearUserIDToken
+import project
 
 class DashboardWindow(QMainWindow):
     def __init__(self, geometry=None):
@@ -134,7 +136,7 @@ class DashboardWindow(QMainWindow):
         print(f"Project {projectIndex+1} opened")
 
     def logout(self):
-        # Call the logout function in auth_manager
+        ClearUserIDToken()
         auth_manager.logout()
         # Close the DashboardWindow
         self.hide()

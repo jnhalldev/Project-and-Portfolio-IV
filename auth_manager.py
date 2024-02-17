@@ -14,12 +14,12 @@ def login(email, password):
     response_data = response.json()
 
     if response.status_code == 200:
-        print("Login successful:", response_data)
-        return response_data
+        return {"success": True, "idToken": response_data['idToken'],"localId": response_data['localId']}
     else:
         # Handle error
-        print("Failed to log in:", response_data.get("error", {}).get("message", "Unknown error"))
-        return None
+        errorMessage = response_data.get("error", {}).get("message", "Unknown error")
+        print("Failed to log in:", errorMessage)
+        return {"success": False, "message": errorMessage}
 
 import requests
 
