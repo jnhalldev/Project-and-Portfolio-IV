@@ -11,6 +11,17 @@ def extract_text_from_pdf_stream(pdf_stream):
     text = ""
     for page in doc:
         text += page.get_text()
+    
+    preprocess_text = preprocess_text(text)
+    
+    return preprocess_text
+
+def preprocess_text(text):
+
+    text = " ".join(text.split())
+    text = text.replace('\n', ' ')
+    text = text.replace('Â', '')
+    
     return text
 
 def process_pdfs_in_zip(database_url, path, id_token, zip_path):

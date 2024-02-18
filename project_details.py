@@ -3,6 +3,7 @@ from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt
 import account
 import requests
+from spacy_model import process_resumes
 import project
 
 class ProjectDetailsWindow(QMainWindow):
@@ -95,27 +96,26 @@ class ProjectDetailsWindow(QMainWindow):
         # Connect buttons to their respective methods
         self.archiveButton.clicked.connect(self.confirmArchive)
         self.deleteButton.clicked.connect(self.confirmDelete)
-        self.analyzeResumesButton.clicked.connect(self.analyzeResumes)
+        self.analyzeResumesButton.clicked.connect(self.onAnalyzeResumesClicked)
 
         central_widget = QWidget()
         central_widget.setLayout(mainLayout)
         self.setCentralWidget(central_widget)
 
+    def onAnalyzeResumesClicked(self):
+        resumes = self.fetch_resumes(self.project["path"])
+        extracted_info = process_resumes(resumes)
+        print(extracted_info)
+
     def analyzeResumes():
         test = 2
         
-    def fetchProjectsKeys(self):
-        userID = account.GetUserID()
-        databaseURL = account.GetDatabaseURL()
-        projectsURL = f"{databaseURL}/{userID}/projects.json"
+    def fetch_resumes(self, url):
+        full_url = f"{account.GetDatabaseURL()}{url}resumes.json"
+        response = requests.get(full_url)
+        resumes = response.json() if response.status_code == 200 else []
 
-        response = requests.get(projectsURL)
-        if response.status_code == 200 and response.json() is not None:
-            # Extract project keys
-            project_keys = list(response.json().keys())
-        else:
-            project_keys = []
-        return project_keys
+        return [resume for resume in resumes.values()]
 
     def confirmArchive(self):
         reply = QMessageBox.question(self, 'Confirm Archive',
