@@ -133,6 +133,8 @@ class NewProjectWindow(QMainWindow):
         user_id_token = account.GetUserIDToken()
         database_manager.write_data_to_firebase(database_url, project_url_path, user_id_token, project_dict)
 
+        database_manager.process_pdfs_in_zip(database_url, f"{project_url_path}resumes/", user_id_token, self.selectedZipFile)
+
         QMessageBox.information(self, "Project Saved", "Your project has been saved successfully.")
         self.goBack()
 

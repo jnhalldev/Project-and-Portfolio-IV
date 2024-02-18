@@ -94,7 +94,7 @@ class DashboardWindow(QMainWindow):
     def loadProjects(self):
 
         self.clearLayout(self.projectsLayout)
-        
+
         projects = []
         userID = GetUserID()
         databaseURL = GetDatabaseURL()
@@ -132,8 +132,6 @@ class DashboardWindow(QMainWindow):
             # Horizontal layout for the project container
             projectLayout = QHBoxLayout()
             self.projectsLayout.setAlignment(Qt.AlignTop)
-
-
 
             # Project title and description
             projectText = QLabel(f"<b>{project['title']}</b><br>{project['description']}")
