@@ -120,10 +120,8 @@ class DashboardWindow(QMainWindow):
                     location = project_data.get("location")
                     skills = project_data.get("skills")
                     path = project_data.get("projectURL")
-                    projectKey = project_key
                     projects.append({"title": title, "description": description,"job_title": jobTitle,"category": category,
-                                     "skills": skills, "education": education, "experience": experience, "location": location, "path": path,
-                                     "projectKey": projectKey})
+                                     "skills": skills, "education": education, "experience": experience, "location": location, "path": path})
                 except json.JSONDecodeError as e:
                     print(f"Failed to parse project data for {project_key}: {e}")
                     continue  # Skip this project on parsing error
