@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QMessageBox, QComboBox, QFrame
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt
+import account
+import requests
 import project
 
 class ProjectDetailsWindow(QMainWindow):
@@ -41,7 +43,7 @@ class ProjectDetailsWindow(QMainWindow):
         formLayout.addWidget(description)
 
         # Position Title
-        positionTitle = QLabel("Position Title Here") 
+        positionTitle = QLabel(self.project["job_title"]) 
         positionTitle.setFont(QFont('Arial', 16))
         positionTitle.setAlignment(Qt.AlignCenter)
         formLayout.addWidget(positionTitle)
@@ -93,10 +95,27 @@ class ProjectDetailsWindow(QMainWindow):
         # Connect buttons to their respective methods
         self.archiveButton.clicked.connect(self.confirmArchive)
         self.deleteButton.clicked.connect(self.confirmDelete)
+        self.analyzeResumesButton.clicked.connect(self.analyzeResumes)
 
         central_widget = QWidget()
         central_widget.setLayout(mainLayout)
         self.setCentralWidget(central_widget)
+
+    def analyzeResumes():
+        test = 2
+        
+    def fetchProjectsKeys(self):
+        userID = account.GetUserID()
+        databaseURL = account.GetDatabaseURL()
+        projectsURL = f"{databaseURL}/{userID}/projects.json"
+
+        response = requests.get(projectsURL)
+        if response.status_code == 200 and response.json() is not None:
+            # Extract project keys
+            project_keys = list(response.json().keys())
+        else:
+            project_keys = []
+        return project_keys
 
     def confirmArchive(self):
         reply = QMessageBox.question(self, 'Confirm Archive',

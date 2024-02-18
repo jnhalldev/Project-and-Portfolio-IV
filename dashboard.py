@@ -108,15 +108,22 @@ class DashboardWindow(QMainWindow):
             if response.status_code == 200:
                 try:
                     # Attempt to parse the JSON string to a dictionary
-                    print(type(response.text))
-                    print(response.text)
-
                     project_data = json.loads(response.text)
 
                     # Now access project_data as a dictionary
                     title = project_data.get("name", project_key)
                     description = project_data.get("description", "No description available")
-                    projects.append({"title": title, "description": description})
+                    jobTitle = project_data.get("job_title")
+                    category = project_data.get("category")
+                    education = project_data.get("education")
+                    experience = project_data.get("experience")
+                    location = project_data.get("location")
+                    skills = project_data.get("skills")
+                    path = project_data.get("projectURL")
+                    projectKey = project_key
+                    projects.append({"title": title, "description": description,"job_title": jobTitle,"category": category,
+                                     "skills": skills, "education": education, "experience": experience, "location": location, "path": path,
+                                     "projectKey": projectKey})
                 except json.JSONDecodeError as e:
                     print(f"Failed to parse project data for {project_key}: {e}")
                     continue  # Skip this project on parsing error

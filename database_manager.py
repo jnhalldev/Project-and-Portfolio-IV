@@ -1,5 +1,5 @@
 import zipfile
-import fitz  # PyMuPDF
+import fitz
 import json
 from firebase_admin import storage
 from account import GetUserIDToken
@@ -44,3 +44,6 @@ def write_data_to_firebase(database_url, path, id_token, data):
     url = f"{database_url}/{path}.json?auth={id_token}"
     response = requests.put(url, json=data)
     return response.json()
+
+def fetch_resume_data():
+    placeholder = 2
