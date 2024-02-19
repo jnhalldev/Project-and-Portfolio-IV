@@ -5,8 +5,8 @@ import json
 from sklearn.model_selection import train_test_split
 
 
-#nlp = spacy.load("en_core_web_sm")
-nlp = spacy.load("data/model/")
+nlp = spacy.load("en_core_web_sm")
+#nlp = spacy.load("data/model/")
 db = DocBin()
 
 def preprocess_text(text):
