@@ -4,7 +4,10 @@ import json
 from firebase_admin import storage
 from account import GetUserIDToken
 import requests
+from urllib3.exceptions import InsecureRequestWarning
 import account
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 def extract_text_from_pdf_stream(pdf_stream):
     doc = fitz.open(stream=pdf_stream, filetype="pdf")
@@ -47,13 +50,13 @@ def process_pdfs_in_zip(database_url, path, id_token, zip_path):
 
 def upload_json_to_storage(database_url, path, id_token, data):
     url = f"{database_url}/{path}.json?auth={id_token}"
-    response = requests.put(url, json=data)
+    response = requests.put(url, json=data, verify=False)
     print(f"Uploaded resume to Firebase Storage")
 
 def write_data_to_firebase(database_url, path, id_token, data):
     """Write data to a specified path in the Firebase Realtime Database."""
     url = f"{database_url}/{path}.json?auth={id_token}"
-    response = requests.put(url, json=data)
+    response = requests.put(url, json=data, verify=False)
     return response.json()
 
 #def fetch_resume_data():

@@ -95,6 +95,20 @@ def process_resumes(resume_json_strings, project):
 
 def score_resume(resume, project_info):
         score = 0
+        
+        # Normalize and split skills from project_info
+        required_skills = [skill.strip().lower() for skill in project_info["skills"].split(',')]
+        print(f"Required skills: {required_skills}")
+
+        # Normalize skills from resume
+        resume_skills = [skill.strip().lower() for skill in resume['skills']]
+        print(f"Resume skills: {resume_skills}")
+
+        # Skills scoring
+        for skill in required_skills:
+            if skill in resume_skills:
+                print(f"Matched skill: {skill}")
+                score += 10
 
         # Skills scoring
         required_skills = project_info["skills"].split(', ') 
@@ -106,8 +120,9 @@ def score_resume(resume, project_info):
             score += 5
 
         # Experience scoring
-        if "years" in project_info["experience"].lower():
-            project_years = int([s for s in project_info["experience"].split() if s.isdigit()][0])
+        project_years_list = [s for s in project_info["experience"].split() if s.isdigit()]
+        if project_years_list:  # Check if the list is not empty
+            project_years = int(project_years_list[0])
             resume_years_list = [int(s) for degree in resume['experience']['years of experience'] for s in degree.split() if s.isdigit()]
             if any(resume_year >= project_years for resume_year in resume_years_list):
                 score += 5
