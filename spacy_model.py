@@ -5,8 +5,8 @@ import json
 from sklearn.model_selection import train_test_split
 
 
-nlp = spacy.load("en_core_web_sm")
-#nlp = spacy.load("data/model/")
+#nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("output\model-best")
 db = DocBin()
 
 def preprocess_text(text):
@@ -16,77 +16,61 @@ def preprocess_text(text):
     return text
 
 def extract_resume_info(doc):
-    # Example structure for storing extracted features
-    resume_data = {
-        "personal_info": {"name": "", "email": "", "phone": ""},
-        "skills": [],
-        "experience": [],
-        "education": [],
-        "certifications": [],
-        "languages": [],
-        "location": []
-    }
-
-    def extract_resume_info(doc):
     # Updated structure for storing extracted features
         resume_data = {
             "personal_info": {
                 "name": "",
                 "email": "",
-                "phone": "",
                 "location": "",
-                "address": ""
             },
             "skills": [],
             "experience": {
                 "positions": [],
                 "companies": [],
-                "technologies": [],
-                "projects": []
+                "years of experience": []
             },
             "education": {
                 "degrees": [],
                 "colleges": [],
-                "certifications": []
+                "certifications": [],
+                "year of graduation": []
             },
-            "links": [],
-            "rewards_achievements": []
+            "links": []
         }
 
         for ent in doc.ents:
             # Print(ent.label_)  # Uncomment for debugging to see what entities are being recognized
-            if ent.label_ == "Name":
+            if ent.label_ == "NAME":
                 resume_data["personal_info"]["name"] = ent.text
-            elif ent.label_ == "Email":
+            elif ent.label_ == "EMAIL ADDRESS":
                 resume_data["personal_info"]["email"] = ent.text
-            elif ent.label_ == "Phone":
-                resume_data["personal_info"]["phone"] = ent.text
-            elif ent.label_ == "Location":
+            elif ent.label_ == "LOCATION":
                 resume_data["personal_info"]["location"] = ent.text
-            elif ent.label_ == "Address":
-                resume_data["personal_info"]["address"] = ent.text
-            elif ent.label_ == "Skills":
+            elif ent.label_ == "SKILLS":
                 resume_data["skills"].append(ent.text)
-            elif ent.label_ == "Designation":
+            elif ent.label_ == "WORKED AS":
                 resume_data["experience"]["positions"].append(ent.text)
-            elif ent.label_ == "Companies worked at":
+            elif ent.label_ == "DESIGNATIONS":
+                resume_data["experience"]["positions"].append(ent.text)
+            elif ent.label_ == "COMPANIES WORKED AT":
                 resume_data["experience"]["companies"].append(ent.text)
-            elif ent.label_ == "Technology":
-                resume_data["experience"]["technologies"].append(ent.text)
-            elif ent.label_ == "Projects":
-                resume_data["experience"]["projects"].append(ent.text)
-            elif ent.label_ == "Degree":
+            elif ent.label_ == "YEARS OF EXPERIENCE":
+                resume_data["experience"]["years of experience"].append(ent.text)
+            elif ent.label_ == "DEGREE":
                 resume_data["education"]["degrees"].append(ent.text)
-            elif ent.label_ == "College Name":
+            elif ent.label_ == "COLLEGE NAME":
                 resume_data["education"]["colleges"].append(ent.text)
-            elif ent.label_ == "Certifications":
-                resume_data["education"]["certifications"].append(ent.text)
-            elif ent.label_ == "Links":
+            elif ent.label_ == "UNIVERSITY":
+                resume_data["education"]["colleges"].append(ent.text)
+            elif ent.label_ == "CERTIFICATION":
+                resume_data["education"]["colleges"].append(ent.text)
+            elif ent.label_ == "YEAR OF GRADUATION":
+                resume_data["education"]["year of graduation"].append(ent.text)
+            elif ent.label_ == "LINKED IN":
                 resume_data["links"].append(ent.text)
-            elif ent.label_ == "Rewards-Achievements":
-                resume_data["rewards_achievements"].append(ent.text)
 
         return resume_data
+    
 
 
 def process_resumes(resume_json_strings):
