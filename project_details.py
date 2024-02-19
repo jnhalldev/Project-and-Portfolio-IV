@@ -3,7 +3,8 @@ from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt
 import account
 import requests
-from spacy_model import process_resumes
+import spacy_model
+from spacy_model import process_resumes, train_model
 import project
 
 class ProjectDetailsWindow(QMainWindow):
@@ -118,12 +119,14 @@ class ProjectDetailsWindow(QMainWindow):
         return [resume for resume in resumes.values()]
 
     def confirmArchive(self):
-        reply = QMessageBox.question(self, 'Confirm Archive',
-                                     "Are you sure you want to Archive this project?",
-                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            self.archiveProject()
-            self.goBack()
+        #reply = QMessageBox.question(self, 'Confirm Archive',
+        #                             "Are you sure you want to Archive this project?",
+        #                             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        #if reply == QMessageBox.Yes:
+        #    self.archiveProject()
+        #    self.goBack()
+        train_model()
+        
 
     def archiveProject(self):
         # Placeholder for archiving logic

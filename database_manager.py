@@ -13,7 +13,7 @@ def extract_text_from_pdf_stream(pdf_stream):
         text += page.get_text()
     
     preprocess_text = preprocess_text(text)
-    
+
     return preprocess_text
 
 def preprocess_text(text):
@@ -56,5 +56,5 @@ def write_data_to_firebase(database_url, path, id_token, data):
     response = requests.put(url, json=data)
     return response.json()
 
-def fetch_resume_data():
-    placeholder = 2
+#def fetch_resume_data():
+#    placeholder = 2
