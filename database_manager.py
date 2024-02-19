@@ -12,9 +12,9 @@ def extract_text_from_pdf_stream(pdf_stream):
     for page in doc:
         text += page.get_text()
     
-    preprocess_text = preprocess_text(text)
+    preprocessed_text = preprocess_text(text)
 
-    return preprocess_text
+    return preprocessed_text
 
 def preprocess_text(text):
 

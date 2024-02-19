@@ -105,11 +105,25 @@ class ProjectDetailsWindow(QMainWindow):
 
     def onAnalyzeResumesClicked(self):
         resumes = self.fetch_resumes(self.project["path"])
-        extracted_info = process_resumes(resumes)
-        print(extracted_info)
+        resume_evaluations = process_resumes(resumes, self.project)
+        top_5_resumes = resume_evaluations[:5]
+        print("Top 5 Resumes:")
 
-    def analyzeResumes():
-        test = 2
+        for i, resume in enumerate(top_5_resumes, start=1):
+            score = resume["score"]
+            resume_id = resume["resume_id"]
+            
+            # Check if the score is above 0
+            if score > 0:
+                print(f"{i}. Resume ID: {resume_id}, Score: {score}")
+            else:
+                print(f"{i}. Resume ID: {resume_id} has a score of 0 or below.")
+
+        # Additional check to see if any of the top 5 scores are above 0
+        if all(resume["score"] <= 0 for resume in top_5_resumes):
+            print("None of the top 5 resumes have a score above 0.")
+        else:
+            print("Some of the top 5 resumes have a score above 0.")
         
     def fetch_resumes(self, url):
         full_url = f"{account.GetDatabaseURL()}{url}resumes.json"
@@ -119,13 +133,13 @@ class ProjectDetailsWindow(QMainWindow):
         return [resume for resume in resumes.values()]
 
     def confirmArchive(self):
-        #reply = QMessageBox.question(self, 'Confirm Archive',
-        #                             "Are you sure you want to Archive this project?",
-        #                             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        #if reply == QMessageBox.Yes:
-        #    self.archiveProject()
-        #    self.goBack()
-        train_model()
+        reply = QMessageBox.question(self, 'Confirm Archive',
+                                     "Are you sure you want to Archive this project?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.archiveProject()
+            self.goBack()
+        #train_model()
         
 
     def archiveProject(self):
@@ -151,4 +165,3 @@ class ProjectDetailsWindow(QMainWindow):
             self.parent().setGeometry(self.geometry()) 
             self.parent().show()
         self.close()
-

@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 
 
 #nlp = spacy.load("en_core_web_sm")
-nlp = spacy.load("output\model-best")
+nlp = spacy.load("output/model-best")
 db = DocBin()
 
 def preprocess_text(text):
@@ -73,16 +73,49 @@ def extract_resume_info(doc):
     
 
 
-def process_resumes(resume_json_strings):
-    extracted_info = []
+def process_resumes(resume_json_strings, project):
+    resume_evaluations = []
     for resume_json_str in resume_json_strings:
         resume_dict = json.loads(resume_json_str)
         resume_text = resume_dict["text"]
+        resume_id = resume_dict["resume"]
         text = preprocess_text(resume_text)
         doc = nlp(text)
         resume_features = extract_resume_info(doc)
-        extracted_info.append(resume_features)
-    return extracted_info
+        score = score_resume(resume_features, project)
+        resume_evaluations.append({
+            "resume_id": resume_id,
+            "features": resume_features,
+            "score": score
+        })
+
+    resume_evaluations.sort(key=lambda x: x['score'], reverse=True)
+
+    return resume_evaluations
+
+def score_resume(resume, project_info):
+        score = 0
+
+        # Skills scoring
+        required_skills = project_info["skills"].split(', ') 
+        resume_skills = resume['skills']
+        score += sum(10 for skill in required_skills if skill.lower() in [r_skill.lower() for r_skill in resume_skills])
+
+        # Education scoring
+        if any(project_info["education"].lower() in degree.lower() for degree in resume['education']['degrees']):
+            score += 5
+
+        # Experience scoring
+        if "years" in project_info["experience"].lower():
+            project_years = int([s for s in project_info["experience"].split() if s.isdigit()][0])
+            resume_years_list = [int(s) for degree in resume['experience']['years of experience'] for s in degree.split() if s.isdigit()]
+            if any(resume_year >= project_years for resume_year in resume_years_list):
+                score += 5
+
+        if project_info["location"].lower() == resume['personal_info']['location'].lower():
+            score += 2
+
+        return score
 
 def train_model():
 
