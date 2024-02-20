@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt
 import account
 import requests
 from spacy_model import process_resumes
+from database_manager import upload_json_to_storage
 
 class ProjectDetailsWindow(QMainWindow):
     def __init__(self, project, parent=None):
@@ -103,20 +104,28 @@ class ProjectDetailsWindow(QMainWindow):
         self.archiveButton.clicked.connect(self.confirmArchive)
         self.deleteButton.clicked.connect(self.confirmDelete)
         self.analyzeResumesButton.clicked.connect(self.onAnalyzeResumesClicked)
+        self.viewCandidatesButton.clicked.connect(self.showTopFive)
 
         central_widget = QWidget()
         central_widget.setLayout(mainLayout)
         self.setCentralWidget(central_widget)
 
+    def showTopFive(self):
+        print("placeholder")
+        
+
     def onAnalyzeResumesClicked(self):
         resumes = self.fetch_resumes(self.project["path"])
         resume_evaluations = process_resumes(resumes, self.project)
+
+        upload_json_to_storage(account.GetDatabaseURL(),f"{self.project['path']}resume_evaluations/",account.GetUserIDToken(),resume_evaluations)
         top_5_resumes = resume_evaluations[:5]
+        self.showTopResumesMessage(top_5_resumes)
         print("Top 5 Resumes:")
 
         for i, resume in enumerate(top_5_resumes, start=1):
             score = resume["score"]
-            resume_id = resume["resume_id"]
+            resume_id = f"{resume['resume_id']}.pdf"
             
             # Check if the score is above 0
             if score > 0:
@@ -124,11 +133,19 @@ class ProjectDetailsWindow(QMainWindow):
             else:
                 print(f"{i}. Resume ID: {resume_id} has a score of 0 or below.")
 
-        # Additional check to see if any of the top 5 scores are above 0
-        if all(resume["score"] <= 0 for resume in top_5_resumes):
-            print("None of the top 5 resumes have a score above 0.")
-        else:
-            print("Some of the top 5 resumes have a score above 0.")
+        
+    def showTopResumesMessage(self, resume_evaluations):
+        messageText = "Top 5 Resumes:\n\n"
+        for i, resume in enumerate(resume_evaluations[:5]):  # Assuming this list is sorted by score
+            messageText += f"{i+1}. ID: {resume['resume_id']}.pdf, Score: {resume['score']}\n"
+            # Add more details as needed
+
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setText(messageText)
+        msgBox.setWindowTitle("Top 5 Resumes")
+        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.exec_()
         
     def fetch_resumes(self, url):
         full_url = f"{account.GetDatabaseURL()}{url}resumes.json"

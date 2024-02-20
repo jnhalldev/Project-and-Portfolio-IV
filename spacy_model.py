@@ -124,11 +124,9 @@ def score_resume(resume, project_info, description_similarity, skills_similarity
     
         # Normalize and split skills from project_info
         required_skills = [skill.strip().lower() for skill in project_info["skills"].split(',')]
-        print(f"Required skills: {required_skills}")
 
         # Normalize skills from resume
         resume_skills = [skill.strip().lower() for skill in resume['skills']]
-        print(f"Resume skills: {resume_skills}")
 
         # Skills scoring with fuzzy matching
         for skill in required_skills:
@@ -136,14 +134,14 @@ def score_resume(resume, project_info, description_similarity, skills_similarity
             if closest_matches:
                 best_match, score_value = closest_matches[0]
                 if score_value > 80:
-                    print(f"Matched skill: {best_match} with a score of {score_value}")
+                    print(f"Matched: {best_match} with a score of {score_value}")
                     score += 10
 
         # Education scoring
         for degree in resume['education']['degrees']:
             degree_normalized = degree.strip().lower()
             if any(fuzz.partial_ratio(degree_normalized, proj_ed.lower()) > 80 for proj_ed in project_info['education']):
-                print(f"Matched education: {degree}")
+                print(f"Matched: {degree}")
                 score += 5
 
         # Experience scoring
@@ -154,14 +152,14 @@ def score_resume(resume, project_info, description_similarity, skills_similarity
                 experience_entry_normalized = experience_entry.strip().lower()
                 experience_years_list = [int(s) for s in experience_entry_normalized.split() if s.isdigit()]
                 if experience_years_list and any(resume_year >= project_years for resume_year in experience_years_list):
-                    print(f"Matched experience: {experience_entry}")
+                    print(f"Matched: {experience_entry}")
                     score += 5
 
         project_location_normalized = project_info["location"].strip().lower()
         resume_location_normalized = resume['personal_info']['location'].strip().lower()
 
         if fuzz.partial_ratio(project_location_normalized, resume_location_normalized) > 80:
-            print(f"Matched location: {resume['personal_info']['location']}")
+            print(f"Matched: {resume['personal_info']['location']}")
             score += 2
 
         score += description_similarity * 10  
