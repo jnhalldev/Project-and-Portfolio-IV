@@ -108,32 +108,36 @@ def score_resume(resume, project_info):
 
         # Skills scoring with fuzzy matching
         for skill in required_skills:
-            # Use the process.extract function to find the closest match to each required skill
             closest_matches = process.extract(skill, resume_skills, scorer=fuzz.partial_ratio, limit=1)
             if closest_matches:
                 best_match, score_value = closest_matches[0]
-                if score_value > 80:  # You can set your own threshold for what you consider a 'match'
+                if score_value > 80:
                     print(f"Matched skill: {best_match} with a score of {score_value}")
                     score += 10
 
-        # Skills scoring
-        #required_skills = project_info["skills"].split(', ') 
-        #resume_skills = resume['skills']
-        #score += sum(10 for skill in required_skills if skill.lower() in [r_skill.lower() for r_skill in resume_skills])
-
         # Education scoring
-        if any(project_info["education"].lower() in degree.lower() for degree in resume['education']['degrees']):
-            score += 5
+        for degree in resume['education']['degrees']:
+            degree_normalized = degree.strip().lower()
+            if any(fuzz.partial_ratio(degree_normalized, proj_ed.lower()) > 80 for proj_ed in project_info['education']):
+                print(f"Matched education: {degree}")
+                score += 5
 
         # Experience scoring
         project_years_list = [s for s in project_info["experience"].split() if s.isdigit()]
-        if project_years_list:  # Check if the list is not empty
+        if project_years_list:
             project_years = int(project_years_list[0])
-            resume_years_list = [int(s) for degree in resume['experience']['years of experience'] for s in degree.split() if s.isdigit()]
-            if any(resume_year >= project_years for resume_year in resume_years_list):
-                score += 5
+            for experience_entry in resume['experience']['years of experience']:
+                experience_entry_normalized = experience_entry.strip().lower()
+                experience_years_list = [int(s) for s in experience_entry_normalized.split() if s.isdigit()]
+                if experience_years_list and any(resume_year >= project_years for resume_year in experience_years_list):
+                    print(f"Matched experience: {experience_entry}")
+                    score += 5
 
-        if project_info["location"].lower() == resume['personal_info']['location'].lower():
+        project_location_normalized = project_info["location"].strip().lower()
+        resume_location_normalized = resume['personal_info']['location'].strip().lower()
+
+        if fuzz.partial_ratio(project_location_normalized, resume_location_normalized) > 80:
+            print(f"Matched location: {resume['personal_info']['location']}")
             score += 2
 
         return score
