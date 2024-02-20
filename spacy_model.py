@@ -5,11 +5,17 @@ import json
 from sklearn.model_selection import train_test_split
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
+from transformers import AutoTokenizer, AutoModel
+import torch
+from scipy.spatial.distance import cosine
+from sklearn.metrics.pairwise import cosine_similarity
 
 
-#nlp = spacy.load("en_core_web_sm")
+nlp_vectoring = spacy.load("en_core_web_sm")
 nlp = spacy.load("output/model-best")
 db = DocBin()
+tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
+model = AutoModel.from_pretrained('bert-base-uncased')
 
 def preprocess_text(text):
     text = text.replace('\n', ' ')
@@ -78,13 +84,32 @@ def extract_resume_info(doc):
 def process_resumes(resume_json_strings, project):
     resume_evaluations = []
     for resume_json_str in resume_json_strings:
+        # load json to get dictionary
         resume_dict = json.loads(resume_json_str)
+        # extract text from dictionary
         resume_text = resume_dict["text"]
+        # extract resume id for tracking
         resume_id = resume_dict["resume"]
-        text = preprocess_text(resume_text)
-        doc = nlp(text)
+        # entity recognition
+        doc = nlp(resume_text)
         resume_features = extract_resume_info(doc)
-        score = score_resume(resume_features, project)
+
+        # entire resume checking for context
+        #job_description_doc = nlp_vectoring(project["description"])
+        #skills_doc = nlp_vectoring(project["skills"])
+        #education_doc = nlp_vectoring(project["education"])
+
+        resume_embedding = get_bert_embedding(resume_text)
+        job_description_embedding = get_bert_embedding(project["description"])
+        skills_embedding = get_bert_embedding(" ".join(project["skills"].split(', '))) 
+        education_embedding = get_bert_embedding(project["education"])
+
+        description_similarity = cosine_similarity(resume_embedding.detach().numpy(), job_description_embedding.detach().numpy())[0][0]
+        skills_similarity = cosine_similarity(resume_embedding.detach().numpy(), skills_embedding.detach().numpy())[0][0]
+        education_similarity = cosine_similarity(resume_embedding.detach().numpy(), education_embedding.detach().numpy())[0][0]
+
+        score = score_resume(resume_features, project, description_similarity, skills_similarity, education_similarity)
+
         resume_evaluations.append({
             "resume_id": resume_id,
             "features": resume_features,
@@ -95,7 +120,13 @@ def process_resumes(resume_json_strings, project):
 
     return resume_evaluations
 
-def score_resume(resume, project_info):
+def get_bert_embedding(text):
+    inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
+    outputs = model(**inputs)
+    embeddings = outputs.last_hidden_state.mean(dim=1)
+    return embeddings
+
+def score_resume(resume, project_info, description_similarity, skills_similarity, education_similarity):
         score = 0
     
         # Normalize and split skills from project_info
@@ -139,6 +170,11 @@ def score_resume(resume, project_info):
         if fuzz.partial_ratio(project_location_normalized, resume_location_normalized) > 80:
             print(f"Matched location: {resume['personal_info']['location']}")
             score += 2
+
+        score += description_similarity * 10  
+        score += skills_similarity * 30       
+        score += education_similarity * 20    
+
 
         return score
 
