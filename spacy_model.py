@@ -3,6 +3,8 @@ from spacy.tokens import DocBin
 from tqdm import tqdm
 import json
 from sklearn.model_selection import train_test_split
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 
 
 #nlp = spacy.load("en_core_web_sm")
@@ -95,7 +97,7 @@ def process_resumes(resume_json_strings, project):
 
 def score_resume(resume, project_info):
         score = 0
-        
+    
         # Normalize and split skills from project_info
         required_skills = [skill.strip().lower() for skill in project_info["skills"].split(',')]
         print(f"Required skills: {required_skills}")
@@ -104,16 +106,20 @@ def score_resume(resume, project_info):
         resume_skills = [skill.strip().lower() for skill in resume['skills']]
         print(f"Resume skills: {resume_skills}")
 
-        # Skills scoring
+        # Skills scoring with fuzzy matching
         for skill in required_skills:
-            if skill in resume_skills:
-                print(f"Matched skill: {skill}")
-                score += 10
+            # Use the process.extract function to find the closest match to each required skill
+            closest_matches = process.extract(skill, resume_skills, scorer=fuzz.partial_ratio, limit=1)
+            if closest_matches:
+                best_match, score_value = closest_matches[0]
+                if score_value > 80:  # You can set your own threshold for what you consider a 'match'
+                    print(f"Matched skill: {best_match} with a score of {score_value}")
+                    score += 10
 
         # Skills scoring
-        required_skills = project_info["skills"].split(', ') 
-        resume_skills = resume['skills']
-        score += sum(10 for skill in required_skills if skill.lower() in [r_skill.lower() for r_skill in resume_skills])
+        #required_skills = project_info["skills"].split(', ') 
+        #resume_skills = resume['skills']
+        #score += sum(10 for skill in required_skills if skill.lower() in [r_skill.lower() for r_skill in resume_skills])
 
         # Education scoring
         if any(project_info["education"].lower() in degree.lower() for degree in resume['education']['degrees']):
