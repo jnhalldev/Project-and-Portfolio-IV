@@ -4,7 +4,6 @@ from PyQt5.QtCore import Qt
 import project
 import database_manager
 import account
-import json
 
 class NewProjectWindow(QMainWindow):
     def __init__(self, geometry=None, parent=None):

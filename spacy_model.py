@@ -6,8 +6,6 @@ from sklearn.model_selection import train_test_split
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 from transformers import AutoTokenizer, AutoModel
-import torch
-from scipy.spatial.distance import cosine
 from sklearn.metrics.pairwise import cosine_similarity
 
 
@@ -20,7 +18,7 @@ model = AutoModel.from_pretrained('bert-base-uncased')
 def preprocess_text(text):
     text = text.replace('\n', ' ')
     text = text.replace('\\n', ' ')
-    text = text.replace('Â', '')  # Example: removing 'Â'
+    text = text.replace('Â', '') 
     return text
 
 def extract_resume_info(doc):
@@ -47,7 +45,6 @@ def extract_resume_info(doc):
         }
 
         for ent in doc.ents:
-            # Print(ent.label_)  # Uncomment for debugging to see what entities are being recognized
             if ent.label_ == "NAME":
                 resume_data["personal_info"]["name"] = ent.text
             elif ent.label_ == "EMAIL ADDRESS":
@@ -94,11 +91,7 @@ def process_resumes(resume_json_strings, project):
         doc = nlp(resume_text)
         resume_features = extract_resume_info(doc)
 
-        # entire resume checking for context
-        #job_description_doc = nlp_vectoring(project["description"])
-        #skills_doc = nlp_vectoring(project["skills"])
-        #education_doc = nlp_vectoring(project["education"])
-
+        #BERT analysis
         resume_embedding = get_bert_embedding(resume_text)
         job_description_embedding = get_bert_embedding(project["description"])
         skills_embedding = get_bert_embedding(" ".join(project["skills"].split(', '))) 

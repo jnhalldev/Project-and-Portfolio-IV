@@ -3,9 +3,7 @@ from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt
 import account
 import requests
-import spacy_model
-from spacy_model import process_resumes, train_model
-import project
+from spacy_model import process_resumes
 
 class ProjectDetailsWindow(QMainWindow):
     def __init__(self, project, parent=None):
@@ -38,17 +36,24 @@ class ProjectDetailsWindow(QMainWindow):
         title.setAlignment(Qt.AlignCenter)
         formLayout.addWidget(title)
 
-        # Project Description
-        description = QLabel(self.project["description"])
-        description.setFont(QFont('Arial', 18))
-        description.setAlignment(Qt.AlignCenter)
-        formLayout.addWidget(description)
+        # Project Category
+        category = QLabel(self.project["category"])
+        category.setFont(QFont('Arial', 20))
+        category.setAlignment(Qt.AlignCenter)
+        formLayout.addWidget(category)
 
         # Position Title
         positionTitle = QLabel(self.project["job_title"]) 
         positionTitle.setFont(QFont('Arial', 16))
         positionTitle.setAlignment(Qt.AlignCenter)
         formLayout.addWidget(positionTitle)
+
+        # Project location
+        location = QLabel(self.project["location"])
+        location.setFont(QFont('Arial', 12))
+        location.setAlignment(Qt.AlignCenter)
+        formLayout.addWidget(location)
+
 
         # Edit Project Details Button
         self.editDetailsButton = QPushButton("Edit Project Details")

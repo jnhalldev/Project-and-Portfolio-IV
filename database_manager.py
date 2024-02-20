@@ -2,10 +2,8 @@ import zipfile
 import fitz
 import json
 from firebase_admin import storage
-from account import GetUserIDToken
 import requests
 from urllib3.exceptions import InsecureRequestWarning
-import account
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -58,6 +56,3 @@ def write_data_to_firebase(database_url, path, id_token, data):
     url = f"{database_url}/{path}.json?auth={id_token}"
     response = requests.put(url, json=data, verify=False)
     return response.json()
-
-#def fetch_resume_data():
-#    placeholder = 2

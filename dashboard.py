@@ -6,7 +6,6 @@ import login_ui
 import new_project_ui
 import project_details
 from account import ClearUserIDToken, GetDatabaseURL, GetUserID, ClearUserID
-import project
 import requests
 import json
 
@@ -139,7 +138,7 @@ class DashboardWindow(QMainWindow):
             self.projectsLayout.setAlignment(Qt.AlignTop)
 
             # Project title and description
-            projectText = QLabel(f"<b>{project['title']}</b><br>{project['description']}")
+            projectText = QLabel(f"<b>{project['title']}</b><br>{project['job_title']}")
             projectText.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
             projectText.setWordWrap(True)
 
