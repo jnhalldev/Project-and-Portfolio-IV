@@ -5,6 +5,8 @@ import account
 import requests
 from spacy_model import process_resumes
 from database_manager import upload_json_to_storage
+from candidate_analytics import CandidateAnalyticsWindow
+
 
 class ProjectDetailsWindow(QMainWindow):
     def __init__(self, project, parent=None):
@@ -105,6 +107,7 @@ class ProjectDetailsWindow(QMainWindow):
         self.deleteButton.clicked.connect(self.confirmDelete)
         self.analyzeResumesButton.clicked.connect(self.onAnalyzeResumesClicked)
         self.viewCandidatesButton.clicked.connect(self.showTopFive)
+        self.candidateAnalyticsButton.clicked.connect(self.openCandidateAnalytics)
 
         central_widget = QWidget()
         central_widget.setLayout(mainLayout)
@@ -112,7 +115,22 @@ class ProjectDetailsWindow(QMainWindow):
 
     def showTopFive(self):
         print("placeholder")
+
+    def openCandidateAnalytics(self):
+        data = self.fetchDataFromFirebase()
+        if data:
+            self.analytics_window = CandidateAnalyticsWindow(data, self)
+            self.analytics_window.show()
         
+
+    def fetchDataFromFirebase(self):
+        full_url = f"{account.GetDatabaseURL()}{self.project['path']}resume_evaluations.json"
+        print(full_url)
+        response = requests.get(full_url)
+        results = response.json() if response.status_code == 200 else []
+
+        return results
+
 
     def onAnalyzeResumesClicked(self):
         resumes = self.fetch_resumes(self.project["path"])
