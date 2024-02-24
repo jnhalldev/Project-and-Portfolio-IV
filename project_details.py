@@ -6,6 +6,7 @@ import requests
 from spacy_model import process_resumes
 from database_manager import upload_json_to_storage
 from candidate_analytics import CandidateAnalyticsWindow
+import new_project_ui
 
 
 class ProjectDetailsWindow(QMainWindow):
@@ -68,7 +69,7 @@ class ProjectDetailsWindow(QMainWindow):
 
         # Model Selection Dropdown
         self.modelSelection = QComboBox()
-        self.modelSelection.addItems(["Model 1", "Model 2", "Model 3"]) 
+        self.modelSelection.addItems(["SpaCy", "Model 2", "Model 3"]) 
         mainLayout.addWidget(self.modelSelection, alignment=Qt.AlignCenter)
 
         # Analyze Resumes Button
@@ -108,6 +109,7 @@ class ProjectDetailsWindow(QMainWindow):
         self.analyzeResumesButton.clicked.connect(self.onAnalyzeResumesClicked)
         self.viewCandidatesButton.clicked.connect(self.showTopFive)
         self.candidateAnalyticsButton.clicked.connect(self.openCandidateAnalytics)
+        self.editDetailsButton.clicked.connect(self.editProjectDetails)
 
         central_widget = QWidget()
         central_widget.setLayout(mainLayout)
@@ -121,6 +123,11 @@ class ProjectDetailsWindow(QMainWindow):
         if data:
             self.analytics_window = CandidateAnalyticsWindow(data, self)
             self.analytics_window.show()
+
+    def editProjectDetails(self):
+        self.new_project_window = new_project_ui.NewProjectWindow(geometry=self.geometry(),project=self.project, parent=self)
+        self.hide()
+        self.new_project_window.show()
         
 
     def fetchDataFromFirebase(self):

@@ -6,9 +6,13 @@ import database_manager
 import account
 
 class NewProjectWindow(QMainWindow):
-    def __init__(self, geometry=None, parent=None):
+    def __init__(self, geometry=None, project=None, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("New Project")
+        self.project = project
+        if project:
+            self.setWindowTitle("Edit Project")
+        else:
+            self.setWindowTitle("New Project")
         if geometry:
             self.setGeometry(geometry)
         self.setWindowIcon(QIcon("images/resu_hunter_icon.png"))
@@ -92,6 +96,19 @@ class NewProjectWindow(QMainWindow):
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
 
+        if self.project:
+            self.fillProjectDetails()
+
+    def fillProjectDetails(self):
+        self.projectNameInput.setText(self.project["title"])
+        self.projectCategoryInput.setText(self.project["category"])
+        self.projectJobTitleInput.setText(self.project["job_title"])
+        self.projectLocationInput.setText(self.project["location"])
+        self.projectDescriptionInput.setPlainText(self.project["description"])
+        self.educationInput.setPlainText(self.project["education"])
+        self.jobSkillsInput.setPlainText(self.project["skills"])
+        self.experienceInput.setPlainText(self.project["experience"])
+
     def uploadResumes(self):
         # Check if a file has already been selected
         if self.selectedZipFile:
@@ -140,8 +157,6 @@ class NewProjectWindow(QMainWindow):
 
     def goBack(self):
         if self.parent():
-            self.parent().setGeometry(self.geometry()) 
-            self.parent().loadProjects()
             self.parent().show()
         self.close()
 
