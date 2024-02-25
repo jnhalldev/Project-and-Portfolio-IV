@@ -4,8 +4,23 @@ import json
 from firebase_admin import storage
 import requests
 from urllib3.exceptions import InsecureRequestWarning
+from io import BytesIO
+from Cryptodome.Cipher import AES
+import pyrebase
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+config = {
+    "apiKey": "AIzaSyCQmi-nmvKtIE304cvwdqZEJrWy0LZIF4I",
+    "authDomain": "resu-hunter.firebaseapp.com",
+    "databaseURL": "https://resu-hunter-default-rtdb.firebaseio.com",
+    "projectId": "resu-hunter",
+    "storageBucket": "resu-hunter.appspot.com",
+    "messagingSenderId": "369157629300",
+    "appId": "1:369157629300:web:b4f00328f7a35643c2b821",
+    "measurementId": "G-3YM8NJFZT2"
+}
+firebase = pyrebase.initialize_app(config)
+storage = firebase.storage()
 
 def extract_text_from_pdf_stream(pdf_stream):
     doc = fitz.open(stream=pdf_stream, filetype="pdf")
@@ -25,13 +40,14 @@ def preprocess_text(text):
     
     return text
 
-def process_pdfs_in_zip(database_url, path, id_token, zip_path):
+def process_pdfs_in_zip(database_url, path, id_token, zip_path, project_name):
     with zipfile.ZipFile(zip_path) as z:
         for filename in z.namelist():
             if filename.endswith(".pdf"):
                 # Extract text from PDF
                 with z.open(filename) as pdf_file:
                     pdf_bytes = pdf_file.read()
+                    upload_pdf_to_database(id_token, project_name, pdf_bytes)
                     text = extract_text_from_pdf_stream(pdf_bytes)
                 
                 parts = filename.split('/')
@@ -45,6 +61,10 @@ def process_pdfs_in_zip(database_url, path, id_token, zip_path):
 
                 # Upload JSON to Firebase Storage (or handle as needed)
                 upload_json_to_storage(database_url, resumePath, id_token, json_data)
+
+def upload_pdf_to_database(path, project_name, pdf):
+    path_on_cloud = f"{path}/{project_name}/"
+    storage.child(path_on_cloud).put(pdf)
 
 def upload_json_to_storage(database_url, path, id_token, data):
     url = f"{database_url}/{path}.json?auth={id_token}"
