@@ -13,6 +13,7 @@ class ProjectDetailsWindow(QMainWindow):
     def __init__(self, project, parent=None):
         super().__init__(parent)
         self.project = project
+        self.data = self.fetchDataFromFirebase()
         self.setupUI()
         self.setGeometry(parent.geometry())
 
@@ -77,7 +78,10 @@ class ProjectDetailsWindow(QMainWindow):
         mainLayout.addWidget(self.analyzeResumesButton, alignment=Qt.AlignCenter)
 
         # Analysis Status Label
-        self.analysisStatusLabel = QLabel("Analysis Status: Pending")
+        if self.data:
+            self.analysisStatusLabel = QLabel("Analysis Status: Complete")
+        else:
+            self.analysisStatusLabel = QLabel("Analysis Status: Pending")
         self.analysisStatusLabel.setAlignment(Qt.AlignCenter)
         mainLayout.addWidget(self.analysisStatusLabel)
 
@@ -116,12 +120,13 @@ class ProjectDetailsWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
     def showTopFive(self):
-        print("placeholder")
+        if self.data:
+            self.showTopResumesMessage(self.data)
 
     def openCandidateAnalytics(self):
-        data = self.fetchDataFromFirebase()
-        if data:
-            self.analytics_window = CandidateAnalyticsWindow(data, self)
+        self.data = self.fetchDataFromFirebase()
+        if self.data:
+            self.analytics_window = CandidateAnalyticsWindow(self.data, self)
             self.analytics_window.show()
 
     def editProjectDetails(self):
@@ -146,31 +151,19 @@ class ProjectDetailsWindow(QMainWindow):
         upload_json_to_storage(account.GetDatabaseURL(),f"{self.project['path']}resume_evaluations/",account.GetUserIDToken(),resume_evaluations)
         top_5_resumes = resume_evaluations[:5]
         self.showTopResumesMessage(top_5_resumes)
-        print("Top 5 Resumes:")
-
-        for i, resume in enumerate(top_5_resumes, start=1):
-            score = resume["score"]
-            resume_id = f"{resume['resume_id']}.pdf"
-            
-            # Check if the score is above 0
-            if score > 0:
-                print(f"{i}. Resume ID: {resume_id}, Score: {score}")
-            else:
-                print(f"{i}. Resume ID: {resume_id} has a score of 0 or below.")
 
         
     def showTopResumesMessage(self, resume_evaluations):
         messageText = "Top 5 Resumes:\n\n"
-        for i, resume in enumerate(resume_evaluations[:5]):  # Assuming this list is sorted by score
+        for i, resume in enumerate(resume_evaluations[:5]):
             messageText += f"{i+1}. ID: {resume['resume_id']}.pdf, Score: {resume['score']}\n"
-            # Add more details as needed
 
-        msgBox = QMessageBox()
-        msgBox.setIcon(QMessageBox.Information)
-        msgBox.setText(messageText)
-        msgBox.setWindowTitle("Top 5 Resumes")
-        msgBox.setStandardButtons(QMessageBox.Ok)
-        msgBox.exec_()
+        self.msgBox = QMessageBox(self)
+        self.msgBox.setIcon(QMessageBox.Information)
+        self.msgBox.setText(messageText)
+        self.msgBox.setWindowTitle("Top 5 Resumes")
+        self.msgBox.setStandardButtons(QMessageBox.Ok)
+        self.msgBox.exec_()
         
     def fetch_resumes(self, url):
         full_url = f"{account.GetDatabaseURL()}{url}resumes.json"
