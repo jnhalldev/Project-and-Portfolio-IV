@@ -9,7 +9,7 @@ class NewProjectWindow(QMainWindow):
     def __init__(self, geometry=None, project=None, parent=None):
         super().__init__(parent)
         self.project = project
-        if project:
+        if self.project and isinstance(self.project, dict):
             self.setWindowTitle("Edit Project")
         else:
             self.setWindowTitle("New Project")
@@ -96,7 +96,7 @@ class NewProjectWindow(QMainWindow):
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
 
-        if self.project:
+        if self.project and isinstance(self.project, dict):
             self.fillProjectDetails()
 
     def fillProjectDetails(self):

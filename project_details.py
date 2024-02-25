@@ -186,7 +186,6 @@ class ProjectDetailsWindow(QMainWindow):
         if reply == QMessageBox.Yes:
             self.archiveProject()
             self.goBack()
-        #train_model()
         
 
     def archiveProject(self):
@@ -203,7 +202,15 @@ class ProjectDetailsWindow(QMainWindow):
             self.goBack()
 
     def deleteProject(self):
-        # Placeholder for delete logic
+        url = f"{account.GetDatabaseURL()}{url}"
+
+        response = requests.delete(url)
+
+        if response.status_code == 200:
+            print("Node deleted successfully.")
+        else:
+            print("Failed to delete node.")
+
         print("Deleting project:", self.project["title"])
         self.goBack()
 

@@ -74,7 +74,7 @@ class DashboardWindow(QMainWindow):
 
     def startNewProject(self):
         self.hide()
-        self.newProjectWindow = new_project_ui.NewProjectWindow(self.geometry(), self)
+        self.newProjectWindow = new_project_ui.NewProjectWindow(self.geometry(), parent=self)
         self.newProjectWindow.show()
 
     def fetchProjectsKeys(self):
