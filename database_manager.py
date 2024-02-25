@@ -5,7 +5,6 @@ from firebase_admin import storage
 import requests
 from urllib3.exceptions import InsecureRequestWarning
 from io import BytesIO
-from Cryptodome.Cipher import AES
 import pyrebase
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
