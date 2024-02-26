@@ -1,5 +1,6 @@
 import zipfile
 import os
+import shutil
 import fitz
 import json
 from firebase_admin import storage
@@ -83,12 +84,30 @@ def write_data_to_firebase(database_url, path, id_token, data):
 def download_file_from_firebase(file_list, storage_path, local_save_path):
     for resume in file_list[:5]:
         full_storage_path = f"{storage_path}{resume['resume_id']}.pdf"
-        local_download_location = local_save_path
+        local_download_location = f"{local_save_path}/{resume['resume_id']}.pdf"
         print(full_storage_path)
         print(local_download_location)
 
+        local_download_location,
+
         try:
-            storage.child(full_storage_path).download(local_download_location,f"{resume['resume_id']}.pdf")
+            storage.child(full_storage_path).download(path=local_download_location,filename=f"{resume['resume_id']}.pdf")
             print(f"File downloaded successfully and saved to {local_save_path}")
+            move_downloaded_files(f"{resume['resume_id']}.pdf", local_save_path)
         except Exception as e:
             print(f"An error occurred while downloading the file: {e}")
+        
+
+def move_downloaded_files(filename, target_location):
+    if not os.path.exists(target_location):
+        os.makedirs(target_location)
+
+    original_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
+    target_path = os.path.join(target_location)
+
+
+    try:
+        shutil.move(original_path, target_path)
+        print(f"Moved {filename} to {target_location}")
+    except Exception as e:
+        print(f"Error moving {filename}: {e}")
