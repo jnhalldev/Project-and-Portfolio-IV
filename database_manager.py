@@ -1,4 +1,5 @@
 import zipfile
+import os
 import fitz
 import json
 from firebase_admin import storage
@@ -78,3 +79,16 @@ def write_data_to_firebase(database_url, path, id_token, data):
     url = f"{database_url}/{path}.json?auth={id_token}"
     response = requests.put(url, json=data, verify=False)
     return response.json()
+
+def download_file_from_firebase(file_list, storage_path, local_save_path):
+    for resume in file_list[:5]:
+        full_storage_path = f"{storage_path}{resume['resume_id']}.pdf"
+        local_download_location = local_save_path
+        print(full_storage_path)
+        print(local_download_location)
+
+        try:
+            storage.child(full_storage_path).download(local_download_location,f"{resume['resume_id']}.pdf")
+            print(f"File downloaded successfully and saved to {local_save_path}")
+        except Exception as e:
+            print(f"An error occurred while downloading the file: {e}")

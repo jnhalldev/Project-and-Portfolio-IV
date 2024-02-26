@@ -1,10 +1,10 @@
-from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QMessageBox, QComboBox, QFrame
+from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QMessageBox, QComboBox, QApplication, QFileDialog
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt
 import account
 import requests
 from spacy_model import process_resumes
-from database_manager import upload_json_to_storage
+from database_manager import upload_json_to_storage, download_file_from_firebase
 from candidate_analytics import CandidateAnalyticsWindow
 import new_project_ui
 
@@ -114,6 +114,7 @@ class ProjectDetailsWindow(QMainWindow):
         self.viewCandidatesButton.clicked.connect(self.showTopFive)
         self.candidateAnalyticsButton.clicked.connect(self.openCandidateAnalytics)
         self.editDetailsButton.clicked.connect(self.editProjectDetails)
+        self.downloadResumesButton.clicked.connect(self.downloadTopPDFs)
 
         central_widget = QWidget()
         central_widget.setLayout(mainLayout)
@@ -122,6 +123,25 @@ class ProjectDetailsWindow(QMainWindow):
     def showTopFive(self):
         if self.data:
             self.showTopResumesMessage(self.data)
+
+    def downloadTopPDFs(self):
+        directory  = self.select_download_location()
+        download_file_from_firebase(self.data, f"{account.GetUserID()}/{self.project['title']}/",directory)
+
+    def select_download_location(self):
+        #app = QApplication([])  # Create an instance of QApplication
+        widget = QWidget()  # Create an instance of QWidget
+
+        # Open a dialog to select a directory
+        directory = QFileDialog.getExistingDirectory(widget, "Select Download Location")
+        
+        # Check if a directory was selected
+        if directory:
+            print(f"Selected directory: {directory}")
+            return directory
+        else:
+            print("No directory selected.")
+            return None
 
     def openCandidateAnalytics(self):
         self.data = self.fetchDataFromFirebase()
