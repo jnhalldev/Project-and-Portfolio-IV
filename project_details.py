@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QMessageBox, QComboBox, QApplication, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QMessageBox, QComboBox, QFileDialog
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt
 import account
@@ -7,6 +7,7 @@ from spacy_model import process_resumes
 from database_manager import upload_json_to_storage, download_file_from_firebase
 from candidate_analytics import CandidateAnalyticsWindow
 import new_project_ui
+import dashboard
 
 
 class ProjectDetailsWindow(QMainWindow):
@@ -126,11 +127,14 @@ class ProjectDetailsWindow(QMainWindow):
 
     def downloadTopPDFs(self):
         directory  = self.select_download_location()
-        download_file_from_firebase(self.data, f"{account.GetUserID()}/{self.project['title']}/",directory)
+        if directory is None:
+            self.goBack() #app was exiting for unknown reason - this brings back to dashboard, stopping from losing the app
+        else:
+            download_file_from_firebase(self.data, f"{account.GetUserID()}/{self.project['title']}/",directory)
+            self.goBack() #app was exiting for unknown reason - this brings back to dashboard, stopping from losing the app
 
     def select_download_location(self):
-        #app = QApplication([])  # Create an instance of QApplication
-        widget = QWidget()  # Create an instance of QWidget
+        widget = QWidget()
 
         # Open a dialog to select a directory
         directory = QFileDialog.getExistingDirectory(widget, "Select Download Location")

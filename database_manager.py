@@ -91,9 +91,12 @@ def download_file_from_firebase(file_list, storage_path, local_save_path):
         local_download_location,
 
         try:
-            storage.child(full_storage_path).download(path=local_download_location,filename=f"{resume['resume_id']}.pdf")
-            print(f"File downloaded successfully and saved to {local_save_path}")
-            move_downloaded_files(f"{resume['resume_id']}.pdf", local_save_path)
+            if os.path.exists(local_download_location):
+                pass
+            else:
+                storage.child(full_storage_path).download(path=local_download_location,filename=f"{resume['resume_id']}.pdf")
+                print(f"File downloaded successfully and saved to {local_save_path}")
+                move_downloaded_files(f"{resume['resume_id']}.pdf", local_save_path)
         except Exception as e:
             print(f"An error occurred while downloading the file: {e}")
         
