@@ -33,7 +33,10 @@ class NewProjectWindow(QMainWindow):
         layout.addLayout(topLayout)
 
         # Project Title
-        self.title = QLabel("Create a New Project")
+        if self.project and isinstance(self.project, dict):
+            self.title = QLabel("Edit Project")
+        else:
+            self.title = QLabel("Create a New Project")
         self.title.setFont(QFont('Arial', 24))
         self.title.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.title)
