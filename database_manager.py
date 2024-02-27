@@ -76,7 +76,6 @@ def upload_json_to_storage(database_url, path, id_token, data):
     print(f"Uploaded resume to Firebase Storage")
 
 def write_data_to_firebase(database_url, path, id_token, data):
-    """Write data to a specified path in the Firebase Realtime Database."""
     url = f"{database_url}/{path}.json?auth={id_token}"
     response = requests.put(url, json=data, verify=False)
     return response.json()
@@ -99,6 +98,9 @@ def download_file_from_firebase(file_list, storage_path, local_save_path):
                 move_downloaded_files(f"{resume['resume_id']}.pdf", local_save_path)
         except Exception as e:
             print(f"An error occurred while downloading the file: {e}")
+
+def delete_resumes(storage_path):
+    storage.child(storage_path).delete()
         
 
 def move_downloaded_files(filename, target_location):

@@ -180,3 +180,7 @@ class DashboardWindow(QMainWindow):
             child = layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.loadProjects()

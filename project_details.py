@@ -7,7 +7,7 @@ from spacy_model import process_resumes
 from database_manager import upload_json_to_storage, download_file_from_firebase
 from candidate_analytics import CandidateAnalyticsWindow
 import new_project_ui
-import dashboard
+import database_manager
 
 
 class ProjectDetailsWindow(QMainWindow):
@@ -219,7 +219,10 @@ class ProjectDetailsWindow(QMainWindow):
             self.goBack()
 
     def deleteProject(self):
-        url = f"{account.GetDatabaseURL()}{url}"
+        url = f"{account.GetDatabaseURL()}{self.project['path']}"
+        url = url[:-1]
+        url = f"{url}.json"
+        database_manager.delete_resumes(self.project['path'])
 
         response = requests.delete(url)
 

@@ -1,11 +1,13 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QVBoxLayout, QWidget, QLineEdit, QTextEdit, QMessageBox, QHBoxLayout, QFileDialog
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 import project
 import database_manager
 import account
 
+
 class NewProjectWindow(QMainWindow):
+    projectAdded = pyqtSignal()
     def __init__(self, geometry=None, project=None, parent=None):
         super().__init__(parent)
         self.project = project
@@ -155,6 +157,7 @@ class NewProjectWindow(QMainWindow):
         database_manager.process_pdfs_in_zip(database_url, f"{project_url_path}resumes/", user_id_token, self.selectedZipFile, self.projectNameInput.text())
 
         QMessageBox.information(self, "Project Saved", "Your project has been saved successfully.")
+        self.projectAdded.emit()
         self.goBack()
 
 
